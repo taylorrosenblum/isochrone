@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deploy on push to the main branch
 
 jobs:
   deploy:
@@ -34,6 +34,18 @@ jobs:
           sed "s/<API_KEY_PLACEHOLDER>/${API_KEY}/" src/apiKey.template.js > docs/apiKey.js
           cp src/index.html docs/index.html
 
-      # This step makes sure the .nojekyll file is in the docs folder to disable Jekyll
+      # This step makes sure the .nojekyll file is in the docs folder to disable Jekyll processing
       - name: Create .nojekyll file to disable Jekyll processing
         run: echo "" > docs/.nojekyll
+
+      # Commit the changes and push to the gh-pages branch (or main branch if using docs folder)
+      - name: Deploy to GitHub Pages
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+          
+          git add -A  # Stage changes
+          git commit -m "Deploy to GitHub Pages" || echo "No changes to commit"
+          
+          # Push to main
+          git push origin main  # Push changes to main (or gh-pages branch if you're using that)
