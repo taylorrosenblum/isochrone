@@ -69,10 +69,9 @@
         </div>
       </form>
     </div>
-    <script type="module">
+    <script>
       // Add your Mapbox access token
-      import API_KEY from './src/apiKey.js';
-      mapboxgl.accessToken = API_KEY;
+      mapboxgl.accessToken = 'API_KEY';
 
       const map = new mapboxgl.Map({
         container: 'map', // Specify the container ID
