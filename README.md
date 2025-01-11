@@ -1,1 +1,1 @@
-An isochrone map generator for my friend Tall
+An isochrone map generator for my friend Tall. Made with [MapBox](https://docs.mapbox.com/help/tutorials/get-started-isochrone-api/).
