@@ -37,12 +37,3 @@ jobs:
       # This step makes sure the .nojekyll file is in the docs folder to disable Jekyll
       - name: Create .nojekyll file to disable Jekyll processing
         run: echo "" > docs/.nojekyll
-
-      # deployment command
-      - name: Deploy command
-        run: |
-          git fetch --all
-          git checkout main  # Or the branch you're using for GitHub Pages
-          git add -A
-          git commit -m "Deploy latest version"
-          git push origin main  # Push the latest build to the GitHub Pages branch
