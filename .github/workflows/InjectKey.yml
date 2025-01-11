@@ -33,7 +33,6 @@ jobs:
           mkdir -p docs
           sed "s/<API_KEY_PLACEHOLDER>/${API_KEY}/" src/apiKey.template.js > docs/apiKey.js
           cp src/index.html docs/index.html
-          cp src/main.js docs/main.js
 
       # This step makes sure the .nojekyll file is in the docs folder to disable Jekyll
       - name: Create .nojekyll file to disable Jekyll processing
