@@ -71,7 +71,8 @@
     </div>
     <script>
       // Add your Mapbox access token
-      mapboxgl.accessToken = 'API_KEY';
+      import API_KEY from './src/apiKey.js';
+      mapboxgl.accessToken = API_KEY;
 
       const map = new mapboxgl.Map({
         container: 'map', // Specify the container ID
