@@ -49,17 +49,24 @@
     <!--Add a form for API key and parameters -->
     <div class="form-container">
       <form id="params">
-        <h4 class="txt-m txt-bold mb6">Enter your API key:</h4>
+        <!--Input for coordinates-->
+        <h4 class="txt-m txt-bold mb6">Enter Coordinates</h4>
         <input
           type="text"
-          id="apiKeyInput"
-          placeholder="Enter API key"
+          id="latInput"
+          placeholder="-71"
           style="width: 100%; margin-bottom: 12px"
-        />
+          />
+        <input
+          type="text"
+          id="lonInput"
+          placeholder="42"
+          style="width: 100%; margin-bottom: 12px"
+          />
         <button
                 type="button"
                 id="initializeMap"
-                style="background-color: #314ccd; color: #ffffff; padding: 6px 20px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer;">
+                style="background-color: #314ccd; color: #ffffff; padding: 6px 20px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-bottom: 12px"">
           Initialize Map
         </button>
         <h4 class="txt-m txt-bold mb6">Choose a travel mode:</h4>
@@ -93,38 +100,44 @@
           </label>
         </div>
       </form>
-      </form>
     </div>
-
     <script>
       let map; // Declare map variable
-      let mapboxAccessToken = '';
 
       // Get DOM elements
-      const apiKeyInput = document.getElementById('apiKeyInput');
+      const latInput = document.getElementById('latInput');
+      const lonInput = document.getElementById('lonInput');
       const initializeMapButton = document.getElementById('initializeMap');
       const params = document.getElementById('params');
 
+      // Add your Mapbox public access token
+      mapboxAccessToken = 'pk.eyJ1IjoidGF5bG9ycjYiLCJhIjoiY201cmp1OHR4MGI3NDJqb2hzZWVrd2VpZCJ9.TnMF7xXpQAcNykfEvEcimQ';
+
       // Initialize map function
       function initializeMap() {
-        if (!apiKeyInput.value) {
-          alert('Please enter a valid API key.');
+        if (!latInput.value || !lonInput.value) {
+          alert('Please enter a valid coordinates.');
           return;
         }
-        mapboxAccessToken = apiKeyInput.value;
+        latVal = parseFloat(latInput.value);
+        lonVal = parseFloat(lonInput.value);
         mapboxgl.accessToken = mapboxAccessToken;
 
-        // Show map container and initialize map
-        document.getElementById('map').style.display = 'block';
-        map = new mapboxgl.Map({
-          container: 'map',
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: [-71.90986429487518, 42.635732814565436],
-          zoom: 11.5,
-        });
+      // Empty the map container in case it has been previously initialized
+      const mapContainer = document.getElementById('map');
+      mapContainer.innerHTML = ''; // Remove all child elements from the map container
+
+      // Show map container and initialize map
+      document.getElementById('map').style.display = 'block';
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [latVal, lonVal],
+        zoom: 11.5,
+      });
 
         const marker = new mapboxgl.Marker({ color: '#314ccd' });
-        const lngLat = { lon: -71.90986429487518, lat: 42.635732814565436 };
+        const lngLat = { lon: latVal, lat: lonVal };
 
         map.on('load', () => {
           map.addSource('iso', {
@@ -162,7 +175,7 @@
         const duration = params.duration.value;
 
         const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
-        const query = `${urlBase}${profile}/-71.90986429487518,42.635732814565436?contours_minutes=${duration}&polygons=true&access_token=${mapboxAccessToken}`;
+        const query = `${urlBase}${profile}/${latVal},${lonVal}?contours_minutes=${duration}&polygons=true&access_token=${mapboxAccessToken}`;
 
         const response = await fetch(query);
         const data = await response.json();
