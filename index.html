@@ -4,13 +4,13 @@
     <meta charset="utf-8" />
     <title>Get started with the Isochrone API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {/* Import Mapbox GL JS */}
+    <!-- Import Mapbox GL JS -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
     <link
       href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
       rel="stylesheet"
     />
-    {/* Import Assembly */}
+    <!-- Import Assembly -->
     <link
       href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css"
       rel="stylesheet"
@@ -27,16 +27,41 @@
         top: 0;
         bottom: 0;
         width: 100%;
+        display: none; /* Hide map initially */
+      }
+
+      .form-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 8px;
       }
     </style>
   </head>
 
   <body>
-    {/* Create a container for the map */}
+    <!-- Create a container for the map -->
     <div id="map"></div>
 
-    <div class="absolute fl my24 mx24 py24 px24 bg-gray-faint round">
+    <!--Add a form for API key and parameters -->
+    <div class="form-container">
       <form id="params">
+        <h4 class="txt-m txt-bold mb6">Enter your API key:</h4>
+        <input
+          type="text"
+          id="apiKeyInput"
+          placeholder="Enter API key"
+          style="width: 100%; margin-bottom: 12px"
+        />
+        <button
+                type="button"
+                id="initializeMap"
+                style="background-color: #314ccd; color: #ffffff; padding: 6px 20px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer;">
+          Initialize Map
+        </button>
         <h4 class="txt-m txt-bold mb6">Choose a travel mode:</h4>
         <div class="mb12 mr12 toggle-group align-center">
           <label class="toggle-container">
@@ -68,94 +93,91 @@
           </label>
         </div>
       </form>
+      </form>
     </div>
+
     <script>
-      // Add your Mapbox access token
-      mapboxgl.accessToken = 'API_KEY';
+      let map; // Declare map variable
+      let mapboxAccessToken = '';
 
-      const map = new mapboxgl.Map({
-        container: 'map', // Specify the container ID
-        style:
-          'mapbox://styles/mapbox/streets-v12', // Specify which map style to use
-        center: [-71.90986429487518, 42.635732814565436], // Specify the starting position
-        zoom: 11.5 // Specify the starting zoom
-      });
-
-      // Create constants to use in getIso()
-      const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
-      const lon = -71.90986429487518;
-      const lat = 42.635732814565436;
-      profile = 'cycling'; // Set the default routing profile
-      minutes = 10; // Set the default duration
-
-      // Create a function that sets up the Isochrone API query then makes an fetch call
-      async function getIso() {
-        const query = await fetch(
-          `${urlBase}${profile}/${lon},${lat}?contours_minutes=${minutes}&polygons=true&access_token=${mapboxgl.accessToken}`,
-          { method: 'GET' }
-        );
-        const data = await query.json();
-        // console.log(data);
-        // Set the 'iso' source's data to what's returned by the API query
-        map.getSource('iso').setData(data);
-       }
-
-      // Target the "params" form in the HTML portion of your code
+      // Get DOM elements
+      const apiKeyInput = document.getElementById('apiKeyInput');
+      const initializeMapButton = document.getElementById('initializeMap');
       const params = document.getElementById('params');
 
-      // When a user changes the value of profile or duration by clicking a button, change the parameter's value and make the API query again
-      params.addEventListener('change', (event) => {
-        if (event.target.name === 'profile') {
-          profile = event.target.value;
-        } else if (event.target.name === 'duration') {
-          minutes = event.target.value;
+      // Initialize map function
+      function initializeMap() {
+        if (!apiKeyInput.value) {
+          alert('Please enter a valid API key.');
+          return;
         }
-        getIso();
-      });
+        mapboxAccessToken = apiKeyInput.value;
+        mapboxgl.accessToken = mapboxAccessToken;
 
-      const marker = new mapboxgl.Marker({
-        color: '#314ccd'
-      });
-
-      // Create a LngLat object to use in the marker initialization
-      // https://docs.mapbox.com/mapbox-gl-js/api/#lnglat
-      const lngLat = {
-        lon: lon,
-        lat: lat
-      };
-
-      map.on('load', () => {
-        // When the map loads, add the source and layer
-        map.addSource('iso', {
-          type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: []
-          }
+        // Show map container and initialize map
+        document.getElementById('map').style.display = 'block';
+        map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [-71.90986429487518, 42.635732814565436],
+          zoom: 11.5,
         });
 
-      map.addLayer(
-        {
-          id: 'isoLayer',
-          type: 'fill',
-          // Use "iso" as the data source for this layer
-          source: 'iso',
-          layout: {},
-          paint: {
-            // The fill color for the layer is set to a light purple
-            'fill-color': '#5a3fc0',
-            'fill-opacity': 0.3
-          }
-        },
-        'poi-label'
-      );
+        const marker = new mapboxgl.Marker({ color: '#314ccd' });
+        const lngLat = { lon: -71.90986429487518, lat: 42.635732814565436 };
 
-      // Initialize the marker at the query coordinates
-      marker.setLngLat(lngLat).addTo(map);
+        map.on('load', () => {
+          map.addSource('iso', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+          });
 
-      // Make the API call
-      getIso();
-     });
+          map.addLayer(
+            {
+              id: 'isoLayer',
+              type: 'fill',
+              source: 'iso',
+              layout: {},
+              paint: {
+                'fill-color': '#5a3fc0',
+                'fill-opacity': 0.3,
+              },
+            },
+            'poi-label'
+          );
+
+          marker.setLngLat(lngLat).addTo(map);
+
+          // Fetch initial Isochrone data
+          getIso();
+        });
+      }
+
+      // Function to fetch isochrone data
+      async function getIso() {
+        const profile = params.profile.value;
+        const duration = params.duration.value;
+
+        const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
+        const query = `${urlBase}${profile}/-71.90986429487518,42.635732814565436?contours_minutes=${duration}&polygons=true&access_token=${mapboxAccessToken}`;
+
+        const response = await fetch(query);
+        const data = await response.json();
+
+        map.getSource('iso').setData(data);
+      }
+
+      // Event listeners
+      initializeMapButton.addEventListener('click', initializeMap);
+
+      params.addEventListener('change', () => {
+        if (map) {
+          getIso();
+        }
+      });
     </script>
   </body>
 </html>
