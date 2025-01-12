@@ -34,8 +34,9 @@
         position: absolute;
         top: 10px;
         left: 10px;
+        width: 300px;
         z-index: 1;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(252, 228, 217, 0.9);
         padding: 10px;
         border-radius: 8px;
       }
@@ -49,27 +50,38 @@
     <!--Add a form for API key and parameters -->
     <div class="form-container">
       <form id="params">
+        <h1 class="txt-l txt-bold mb6">Isochrone Generator</h1>
+        <p1 class="txt-s">
+          The <a href="https://www.w3schools.com/html/" title="title"><b>
+          Mapbox Isochrone API</b></a> computes areas that
+          are reachable within a specified amount of time
+          from a location, and returns the reachable regions
+          as contours of polygons or lines that you can
+          display on a map.
+        </p1>
+        <p></p>
         <!--Input for coordinates-->
-        <h4 class="txt-m txt-bold mb6">Enter Coordinates</h4>
+        <h2 class="txt-s txt-bold mb6" style="margin-top: 24px">Enter Coordinates</h2>
         <input
           type="text"
           id="latInput"
-          placeholder="-71"
-          style="width: 100%; margin-bottom: 12px"
+          placeholder="Latitude"
+          style="font-size: 11px; width: 25%; margin-bottom: 12px"
           />
         <input
           type="text"
           id="lonInput"
-          placeholder="42"
-          style="width: 100%; margin-bottom: 12px"
+          placeholder="Longitude"
+          style="font-size: 11px; width: 25%; margin-bottom: 12px"
           />
         <button
                 type="button"
                 id="initializeMap"
-                style="background-color: #314ccd; color: #ffffff; padding: 6px 20px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-bottom: 12px"">
+                style="background-color: rgba(245, 120, 66, 1); color: #ffffff; padding: 6px 20px; font-size: 12px;
+                border-radius: 6px; border: none; cursor: pointer; margin-bottom: 24px">
           Initialize Map
         </button>
-        <h4 class="txt-m txt-bold mb6">Choose a travel mode:</h4>
+        <h3 class="txt-s txt-bold mb6">Choose a travel mode:</h3>
         <div class="mb12 mr12 toggle-group align-center">
           <label class="toggle-container">
             <input name="profile" type="radio" value="walking" />
@@ -84,7 +96,7 @@
             <div class="toggle toggle--active-null toggle--null">Driving</div>
           </label>
         </div>
-        <h4 class="txt-m txt-bold mb6">Choose a maximum duration:</h4>
+        <h4 class="txt-s txt-bold mb6">Choose a maximum duration:</h4>
         <div class="mb12 mr12 toggle-group align-center">
           <label class="toggle-container">
             <input name="duration" type="radio" value="10" checked />
